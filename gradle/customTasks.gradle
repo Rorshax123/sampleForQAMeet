@@ -1,0 +1,58 @@
+task addEmptyLineAfterMultilineStep(type: DefaultTask) {
+    group = "verification"
+    description = "Добавляет пустую строку перед вложенными вызовами step(...), если её ещё нет"
+
+    doLast {
+        def countChar = { String line, char c ->
+            int cnt = 0
+            line.each { ch ->
+                if (ch == c) cnt++
+            }
+            return cnt
+        }
+
+        fileTree(dir: projectDir, include: '**/test/java/**/*.java').each { file ->
+            def lines = file.readLines('UTF-8')
+            def newText = new StringBuilder()
+            boolean inStep = false
+            int parenDepth = 0
+            def lastAppendedLine = ""
+
+            for (int i = 0; i < lines.size(); i++) {
+                def line = lines[i]
+
+                // Если мы уже внутри блока step и строка начинается с вложенного "step(",
+                // добавляем пустую строку только если предыдущая строка не пуста
+                if (inStep && line.trim().startsWith("step(")) {
+                    if (lastAppendedLine.trim() != "") {
+                        newText.append("\n")
+                        lastAppendedLine = ""
+                    }
+                }
+
+                newText.append(line).append("\n")
+                lastAppendedLine = line
+
+                // Если не в блоке step и строка содержит начало вызова step(, устанавливаем флаг
+                if (!inStep && line.contains("step(")) {
+                    inStep = true
+                }
+
+                if (inStep) {
+                    int opens = countChar(line, '(' as char)
+                    int closes = countChar(line, ')' as char)
+                    parenDepth += (opens - closes)
+
+                    // Если баланс скобок указывает на завершение вызова (строка содержит ");"), сбрасываем флаг
+                    if (parenDepth <= 0 && line.contains(");")) {
+                        inStep = false
+                        parenDepth = 0
+                    }
+                }
+            }
+
+            file.write(newText.toString(), "UTF-8")
+            println "Updated file: ${file.path}"
+        }
+    }
+}
