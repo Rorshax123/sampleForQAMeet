@@ -1,4 +1,4 @@
-package uz.pet.pet_api.Constants;
+package uz.pet.pet_api.constants;
 
 import lombok.Getter;
 

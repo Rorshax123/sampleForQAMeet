@@ -14,6 +14,9 @@ public class PetService {
         return reqSpec.getRequestSpecification()
             .body(request)
             .post("/pet")
+            .then()
+            .statusCode(200)
+            .extract()
             .as(AddPetReqAndResponse.class);
     }
 

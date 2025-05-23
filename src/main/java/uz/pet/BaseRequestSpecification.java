@@ -10,5 +10,5 @@ import static io.restassured.filter.log.LogDetail.ALL;
 
 public class BaseRequestSpecification {
     public RequestSpecification baseReqSpec = given().filters(new AllureRestAssured(),
-        new ResponseLoggingFilter(ALL), new RequestLoggingFilter(ALL)).relaxedHTTPSValidation();
+        new ResponseLoggingFilter(ALL), new RequestLoggingFilter(ALL));
 }

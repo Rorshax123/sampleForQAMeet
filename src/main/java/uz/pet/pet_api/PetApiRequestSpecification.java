@@ -5,11 +5,10 @@ import io.restassured.specification.RequestSpecification;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 import uz.pet.BaseRequestSpecification;
-import uz.pet.pet_api.Constants.URLs;
+import uz.pet.pet_api.constants.URLs;
 
 import static io.restassured.RestAssured.given;
 
-@Setter
 @Component
 public class PetApiRequestSpecification extends BaseRequestSpecification {
 
